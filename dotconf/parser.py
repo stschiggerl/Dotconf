@@ -189,14 +189,6 @@ class DotconfParser(object):
         self._parser = yacc.yacc(module=self, **kwargs)
         self._old_line = 0
 
-    def _check_line(self, current, lineno, pos, token):
-        if self._old_line == current:
-            pos = Position(self._input_name, lineno, pos)
-            raise ParsingError('Syntax error near of "%s", '
-                               'newline missing?' % token, pos)
-        else:
-            self._old_line = current
-
     #
     # Rules
     #
@@ -270,8 +262,6 @@ class DotconfParser(object):
     def p_section_content_assignation(self, p):
         """section_content : section_content assignment
                            | section_content section"""
-        self._check_line(p.lexer.lineno, p.lineno(2),
-                         self._lexer.column(p.lexpos(2)), p[2].name)
         p[1].append(p[2])
         p[0] = p[1]
 
